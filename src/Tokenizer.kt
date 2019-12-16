@@ -1,47 +1,53 @@
-import java.lang.Exception
+import java.util.*
 
-class Tokenizer(var token: Token) {
-	
-	// Consumes the current token if it matches `op`.
-	private fun consume(op: Char): Boolean {
-		if (token.kind != TokenKind.RESERVED || token.tokenString[0] != op) return false
-		token = token.next ?: throw Exception("token.next is null at consume")
-		return true
+class Lexer {
+	private fun getAtom(s: String, i: Int): String {
+		var j = i
+		while (j < s.length) {
+			if (Character.isLetter(s[j])) {
+				j++
+			}
+			else {
+				return s.substring(i, j)
+			}
+		}
+		return s.substring(i, j)
 	}
 	
-	// Ensure that the current token is `op`.
-	private fun ecpect(op: Char) {
-		if (token.kind != TokenKind.RESERVED || token.tokenString[0] != op) error("expected: $op")
-		token = token.next ?: throw Exception("token.next is null at expect")
-	}
-	
-	// Ensure that the current token is TK_NUM.
-	private fun expectNunber(): Int {
-		if (token.kind != TokenKind.NUM)
-			error("expected a number")
-		val value = token.value
-		token = token.next ?: throw Exception("token is null at expectNumber")
-		return value ?: throw Exception("value is null at expectNumber")
-	}
-	
-	private fun atEOF() = token.kind == TokenKind.EOF
-	
-	fun tokenize(point: String): Token {
-		val head = Token()
-		head.next = null
-		var cur = head
-		for (p in point) {
-			if (p.isWhitespace()) continue
-			
-			// Punctuator
-			if(p == '+' || p == '-') {
-				cur = Token().apply {
-					kind = TokenKind.RESERVED
-					next = cur
-					
+	fun lex(input: String): List<Token> {
+		val result: MutableList<Token> = ArrayList()
+		var i = 0
+		while (i < input.length) {
+			print(input[i].toString())
+			when (input[i]) {
+				'(' -> {
+					result.add(Token(TokenKind.LPAREN, "("))
+					i++
+				}
+				')' -> {
+					result.add(Token(TokenKind.RPAREN, ")"))
+					i++
+				}
+				'{' -> {
+					result.add(Token(TokenKind.LBRANCE, "{"))
+					i++
+				}
+				'}' -> {
+					result.add(Token(TokenKind.RBRANCE, "}"))
+					i++
+				}
+				else -> {
+					if (Character.isWhitespace(input[i])) {
+						i++
+					}
+					else {
+						val atom = getAtom(input, i)
+						i += atom.length
+						result.add(Token(TokenKind.ATOM, atom))
+					}
 				}
 			}
-			
 		}
+		return result
 	}
 }
