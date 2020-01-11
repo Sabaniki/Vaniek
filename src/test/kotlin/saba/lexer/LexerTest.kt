@@ -1,25 +1,152 @@
 package saba.lexer
 
+import io.kotlintest.should
+import io.kotlintest.shouldBe
+import io.kotlintest.specs.ShouldSpec
+import io.kotlintest.specs.StringSpec
 import org.junit.Test
+import saba.token.Token
 import saba.token.TokenType
 import kotlin.test.assertEquals
 
-class LexerTest {
+class LexerTest : ShouldSpec(
+	{
+		val input = """
+				let five = 5;
+				let ten = 10.00;
 
-}
+				let add = fn(x, y) {
+					x + y;
+				};
 
-fun main() {
-	val lexer = Lexer("let a = 10;")
-//	val token1 = lexer.nextToken()
-//	val token2 = lexer.nextToken()
-//	val token3 = lexer.nextToken()
-//	val token4 = lexer.nextToken()
-//	val token5 = lexer.nextToken()
-	// lexer.nextToken()
-	var type = TokenType.ILLEGAL
-	while (type != TokenType.EOF) {
-		val token = lexer.nextToken()
-		type = token.type
-		println("Type: ${token.type}, Literal: ${token.literal}")
+				let result = add(five, ten);
+
+				!-/*5;
+				5 < 10 > 5;
+
+				if (5 < 10) {
+					return true;
+				}
+				else {
+					return false;
+				}
+
+				10 == 10;
+				10 != 9;
+		"""
+		val lexer = Lexer(input)
+		"TypeとLiteralが合致するかどうか" {
+			val tests = listOf(
+				// let five = 5;
+				Token(TokenType.LET, "let"),
+				Token(TokenType.IDENT, "five"),
+				Token(TokenType.ASSIGN, "="),
+				Token(TokenType.INT, "5"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				// let ten = 10.00;
+				Token(TokenType.LET, "let"),
+				Token(TokenType.IDENT, "ten"),
+				Token(TokenType.ASSIGN, "="),
+				Token(TokenType.FLOAT, "10.00"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				//	let add = fn(x, y) {
+				//       x + y;
+				//  };
+				Token(TokenType.LET, "let"),
+				Token(TokenType.IDENT, "add"),
+				Token(TokenType.ASSIGN, "="),
+				Token(TokenType.FUNCTION, "fn"),
+				Token(TokenType.LPAREN, "("),
+				Token(TokenType.IDENT, "x"),
+				Token(TokenType.COMMA, ","),
+				Token(TokenType.IDENT, "y"),
+				Token(TokenType.RPAREN, ")"),
+				Token(TokenType.LBRACE, "{"),
+				Token(TokenType.IDENT, "x"),
+				Token(TokenType.PLUS, "+"),
+				Token(TokenType.IDENT, "y"),
+				Token(TokenType.SEMICOLON, ";"),
+				Token(TokenType.RBRACE, "}"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				// let result = add(five, ten);
+				Token(TokenType.LET, "let"),
+				Token(TokenType.IDENT, "result"),
+				Token(TokenType.ASSIGN, "="),
+				Token(TokenType.IDENT, "add"),
+				Token(TokenType.LPAREN, "("),
+				Token(TokenType.IDENT, "five"),
+				Token(TokenType.COMMA, ","),
+				Token(TokenType.IDENT, "ten"),
+				Token(TokenType.RPAREN, ")"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				// !-/*5;
+				Token(TokenType.BANG, "!"),
+				Token(TokenType.MINUS, "-"),
+				Token(TokenType.SLASH, "/"),
+				Token(TokenType.ASTERISK, "*"),
+				Token(TokenType.INT, "5"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				
+				// 5 < 10 > 5;
+				Token(TokenType.INT, "5"),
+				Token(TokenType.LT, "<"),
+				Token(TokenType.INT, "10"),
+				Token(TokenType.GT, ">"),
+				Token(TokenType.INT, "5"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				// if (5 < 10) {
+				//		return true;
+				//	}
+				Token(TokenType.IF, "if"),
+				Token(TokenType.LPAREN, "("),
+				Token(TokenType.INT, "5"),
+				Token(TokenType.LT, "<"),
+				Token(TokenType.INT, "10"),
+				Token(TokenType.RPAREN, ")"),
+				Token(TokenType.LBRACE, "{"),
+				Token(TokenType.RETURN, "return"),
+				Token(TokenType.TRUE, "true"),
+				Token(TokenType.SEMICOLON, ";"),
+				Token(TokenType.RBRACE, "}"),
+				
+				// 	else {
+				//		return false;
+				//	}
+				Token(TokenType.ELSE, "else"),
+				Token(TokenType.LBRACE, "{"),
+				Token(TokenType.RETURN, "return"),
+				Token(TokenType.FALSE, "false"),
+				Token(TokenType.SEMICOLON, ";"),
+				Token(TokenType.RBRACE, "}"),
+				
+				// 10 == 10;
+				Token(TokenType.INT, "10"),
+				Token(TokenType.EQ, "=="),
+				Token(TokenType.INT, "10"),
+				Token(TokenType.SEMICOLON, ";"),
+				
+				// 10 != 9;
+				Token(TokenType.INT, "10"),
+				Token(TokenType.NOT_EQ, "!="),
+				Token(TokenType.INT, "9"),
+				Token(TokenType.SEMICOLON, ";")
+			)
+			
+			for ((i, test) in tests.withIndex()) {
+				val token = lexer.nextToken()
+				should("$i 番目のTypeは") {
+					test.type shouldBe token.type
+				}
+				should("$i 番目のLiteralは") {
+					test.literal shouldBe token.literal
+				}
+			}
+		}
 	}
-}
+)
