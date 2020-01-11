@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_vaniek" default="compile.module.vaniek">
+  <dirname property="module.vaniek.basedir" file="${ant.file.module_vaniek}"/>
+  
+  <property name="module.jdk.home.vaniek" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.vaniek" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.vaniek" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.vaniek" value="-encoding UTF-8 -source 12 -target 12 ${compiler.args}"/>
+  
+  <property name="vaniek.output.dir" value="${module.vaniek.basedir}/out/production/vaniek"/>
+  <property name="vaniek.testoutput.dir" value="${module.vaniek.basedir}/out/test/vaniek"/>
+  
+  <path id="vaniek.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="vaniek.module.production.classpath">
+    <path refid="${module.jdk.classpath.vaniek}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+  </path>
+  
+  <path id="vaniek.runtime.production.module.classpath">
+    <pathelement location="${vaniek.output.dir}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+  </path>
+  
+  <path id="vaniek.module.classpath">
+    <path refid="${module.jdk.classpath.vaniek}"/>
+    <pathelement location="${vaniek.output.dir}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+  </path>
+  
+  <path id="vaniek.runtime.module.classpath">
+    <pathelement location="${vaniek.testoutput.dir}"/>
+    <pathelement location="${vaniek.output.dir}"/>
+    <path refid="library.kotlinjavaruntime.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.vaniek">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.vaniek">
+    <patternset refid="excluded.from.module.vaniek"/>
+  </patternset>
+  
+  <path id="vaniek.module.sourcepath">
+    <dirset dir="${module.vaniek.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.vaniek" depends="compile.module.vaniek.production,compile.module.vaniek.tests" description="Compile module vaniek"/>
+  
+  <target name="compile.module.vaniek.production" depends="register.custom.compilers" description="Compile module vaniek; production classes">
+    <mkdir dir="${vaniek.output.dir}"/>
+    <javac2 destdir="${vaniek.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.vaniek}/javac">
+      <compilerarg line="${compiler.args.vaniek}"/>
+      <bootclasspath refid="vaniek.module.bootclasspath"/>
+      <classpath refid="vaniek.module.production.classpath"/>
+      <src refid="vaniek.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.vaniek"/>
+    </javac2>
+    
+    <copy todir="${vaniek.output.dir}">
+      <fileset dir="${module.vaniek.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.vaniek.tests" depends="register.custom.compilers,compile.module.vaniek.production" description="compile module vaniek; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.vaniek" description="cleanup module">
+    <delete dir="${vaniek.output.dir}"/>
+    <delete dir="${vaniek.testoutput.dir}"/>
+  </target>
+</project>
