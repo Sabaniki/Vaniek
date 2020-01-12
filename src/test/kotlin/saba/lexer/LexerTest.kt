@@ -1,13 +1,9 @@
 package saba.lexer
 
-import io.kotlintest.should
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.ShouldSpec
-import io.kotlintest.specs.StringSpec
-import org.junit.Test
 import saba.token.Token
 import saba.token.TokenType
-import kotlin.test.assertEquals
 
 class LexerTest : ShouldSpec(
 	{
@@ -33,6 +29,7 @@ class LexerTest : ShouldSpec(
 
 				10 == 10;
 				10 != 9;
+				let a = 10.0;
 		"""
 		val lexer = Lexer(input)
 		"TypeとLiteralが合致するかどうか" {
@@ -135,16 +132,23 @@ class LexerTest : ShouldSpec(
 				Token(TokenType.INT, "10"),
 				Token(TokenType.NOT_EQ, "!="),
 				Token(TokenType.INT, "9"),
+				Token(TokenType.SEMICOLON, ";"),
+			
+				// let a = 10..0
+				Token(TokenType.LET, "let"),
+				Token(TokenType.IDENT, "a"),
+				Token(TokenType.ASSIGN, "="),
+				Token(TokenType.FLOAT, "10.0"),
 				Token(TokenType.SEMICOLON, ";")
 			)
 			
 			for ((i, test) in tests.withIndex()) {
 				val token = lexer.nextToken()
 				should("$i 番目のTypeは") {
-					test.type shouldBe token.type
+					token.type shouldBe test.type
 				}
 				should("$i 番目のLiteralは") {
-					test.literal shouldBe token.literal
+					token.literal shouldBe test.literal
 				}
 			}
 		}

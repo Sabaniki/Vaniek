@@ -12,7 +12,7 @@ class Repl {
 			if (line == "!!exit" || line == null) return
 			val lexer = Lexer(line)
 			
-			var type = TokenType.ILLEGAL
+			var type: TokenType
 			while (true) {
 				val token = lexer.nextToken()
 				type = token.type
