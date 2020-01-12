@@ -2,10 +2,11 @@ package saba.ast
 
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.ShouldSpec
+import saba.ast.statement.LetStatement
 import saba.token.Token
 import saba.token.TokenType
 
-class AstTest: ShouldSpec({
+class LetStatementTest : ShouldSpec({
 	"let文のastを作れているかどうか" {
 		val program = Program(
 			statements = listOf(

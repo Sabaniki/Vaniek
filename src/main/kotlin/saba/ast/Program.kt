@@ -1,5 +1,7 @@
 package saba.ast
 
+import saba.ast.statement.Statement
+
 class Program(
 	val statements: List<Statement>
 ) : Node {
