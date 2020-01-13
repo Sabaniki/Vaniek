@@ -123,8 +123,6 @@ class Parser(val lexer: Lexer) {
 			literal = ""
 		)
 	
-	
-	
 	fun registerPrefix(tokenType: TokenType, function: () -> Expression) {
 		prefixParseFns[tokenType] = function
 	}

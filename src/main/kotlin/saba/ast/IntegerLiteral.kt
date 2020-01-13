@@ -2,12 +2,13 @@ package saba.ast
 
 import saba.token.Token
 
-class Identifier(
+class IntegerLiteral(
 	val token: Token,
-	val value: String
+	val value: Int
 ): Expression, Node {
 	
 	override fun tokenLiteral() = token.literal
 	
-	override fun string() = value
+	override fun string() = token.literal
+	
 }
