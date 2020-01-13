@@ -11,6 +11,4 @@ class ExpressionStatement(
 	override fun tokenLiteral() = token.literal
 	
 	override fun string() = expression?.string() ?: ""
-	
-	override fun statementNode() {}
 }

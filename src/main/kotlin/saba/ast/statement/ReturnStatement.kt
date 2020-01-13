@@ -8,8 +8,6 @@ class ReturnStatement(
 	val token: Token,
 	val returnValue: Expression?
 ): Node, Statement {
-	override fun statementNode() {}
-	
 	override fun tokenLiteral() = token.literal
 	
 	override fun string(): String {

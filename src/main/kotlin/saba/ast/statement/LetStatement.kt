@@ -19,7 +19,4 @@ class LetStatement(
 		
 		return infoString
 	}
-	
-	override fun statementNode() {}
-	
 }
