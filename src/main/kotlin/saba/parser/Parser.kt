@@ -5,6 +5,7 @@ import saba.token.Token
 import saba.token.TokenType
 import saba.ast.Expression
 import saba.ast.Identifier
+import saba.ast.IntegerLiteral
 import saba.ast.Program
 import saba.ast.statement.ExpressionStatement
 import saba.ast.statement.LetStatement
@@ -14,19 +15,33 @@ import saba.ast.statement.Statement
 class Parser(val lexer: Lexer) {
 	var currentToken: Token? = null
 	var peekToken: Token? = null
-	val prefixParseFns = mutableMapOf<TokenType, () -> Expression>()
+	val prefixParseFns = mutableMapOf<TokenType, () -> Expression?>()
 	val infixParseFns = mutableMapOf<TokenType, (Expression) -> Expression>()
 	val errors = mutableListOf<String>()
 	
 	init {
 		// Identifier用のprefixを追加
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
+		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
 		
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
 	}
 	
 	private fun parseIdentifier() = Identifier(checkedCurrentToken(), checkedCurrentToken().literal)
+	
+	private fun parseIntegerLiteral(): Expression {
+		val value = checkedCurrentToken().literal.toIntOrNull()
+		if (value == null) {
+			errors.add("could not parse ${checkedCurrentToken().literal}")
+			return IntegerLiteral(Token(TokenType.IDENT, ""), Int.MIN_VALUE)
+		}
+		
+		return IntegerLiteral(
+			checkedCurrentToken(),
+			checkedCurrentToken().literal.toInt()
+		)
+	}
 	
 	fun nextToken() {
 		currentToken = peekToken
