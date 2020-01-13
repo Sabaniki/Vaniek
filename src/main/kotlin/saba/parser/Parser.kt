@@ -19,6 +19,9 @@ class Parser(val lexer: Lexer) {
 	val errors = mutableListOf<String>()
 	
 	init {
+		// Identifier用のprefixを追加
+		registerPrefix(TokenType.IDENT, ::parseIdentifier)
+		
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
 	}
