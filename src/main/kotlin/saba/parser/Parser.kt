@@ -9,6 +9,7 @@ import saba.ast.Program
 import saba.ast.statement.LetStatement
 import saba.ast.statement.ReturnStatement
 import saba.ast.statement.Statement
+import kotlin.math.ln
 
 class Parser(val lexer: Lexer) {
 	var currentToken: Token? = null
@@ -28,9 +29,9 @@ class Parser(val lexer: Lexer) {
 	
 	fun parseProgram(): Program {
 		val program = Program(mutableListOf())
-		while (currentTokenIs(TokenType.EOF)) {
+		while (!currentTokenIs(TokenType.EOF)) {
 			val statement = parseStatement()
-			if (statement != null) program.statements.plus(statement)
+			if (statement != null) program.statements.add(statement)
 			nextToken()
 		}
 		return program
@@ -45,32 +46,42 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	private fun parseReturnStatement(): Statement {
-		nextToken()
-		
-		// TODO: セミコロンに遭遇するまで式を読み飛ばしてしまっている
-		while (currentTokenIs(TokenType.SEMICOLON)) nextToken()
-		
-		return ReturnStatement(
+		val returnStatement = ReturnStatement(
 			token = currentToken ?: Token(TokenType.ILLEGAL, ""),
 			returnValue = null  // TODO: 本当はここにちゃんとした値が入る
 		)
+		nextToken()
+		
+		// TODO: セミコロンに遭遇するまで式を読み飛ばしてしまっている
+		while (!currentTokenIs(TokenType.SEMICOLON)) nextToken()
+		
+		return returnStatement
 	}
 	
 	private fun parseLetStatement(): Statement? {
+		val token = currentToken
+		
 		if (!expectPeek(TokenType.IDENT)) return null
+		
+		val name = Identifier(
+			token = currentToken ?: Token(TokenType.ILLEGAL, ""),
+			value = currentToken?.literal ?: ""
+		)
+		
 		if (!expectPeek(TokenType.ASSIGN)) return null
 		
-		// TODO: セミコロンに遭遇するまで式を読み飛ばしてしまっている
-		while (currentTokenIs(TokenType.SEMICOLON)) nextToken()
-		
-		return LetStatement(
-			token = currentToken ?: Token(TokenType.ILLEGAL, ""),
-			name = Identifier(
-				token = currentToken ?: Token(TokenType.ILLEGAL, ""),
-				value = currentToken?.literal ?: ""
-			),
+		val statement = LetStatement(
+			token = token ?: Token(TokenType.ILLEGAL, ""),
+			name = name,
 			value = null    // TODO: 本当はここにちゃんとした値が入る
 		)
+		
+		// TODO: セミコロンに遭遇するまで式を読み飛ばしてしまっている
+		while (!currentTokenIs(TokenType.SEMICOLON)) {
+			nextToken()
+		}
+		
+		return statement
 	}
 	
 	fun currentTokenIs(tokenType: TokenType) = currentToken?.type == tokenType
@@ -86,7 +97,7 @@ class Parser(val lexer: Lexer) {
 		false
 	}
 	
-	fun peekError(tokenType: TokenType){
+	fun peekError(tokenType: TokenType) {
 		val errorMessage = "expected next token to be $tokenType, got ${peekToken?.type} instead"
 		errors.add(errorMessage)
 	}

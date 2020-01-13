@@ -1,3 +1,6 @@
 # Default ignored files
 /workspace.xml
-
+/target/
+/out/
+/.idea/
+/.kotlintest

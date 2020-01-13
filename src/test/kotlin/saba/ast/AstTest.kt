@@ -9,7 +9,7 @@ import saba.token.TokenType
 class LetStatementTest : ShouldSpec({
 	"let文のastを作れているかどうか" {
 		val program = Program(
-			statements = listOf(
+			statements = mutableListOf(
 				LetStatement(
 					token = Token(
 						type = TokenType.LET,
@@ -32,7 +32,29 @@ class LetStatementTest : ShouldSpec({
 				)
 			)
 		)
-		
-		program.string() shouldBe "let myVar = anotherVar;"
+		program.statements.add(
+			LetStatement(
+				token = Token(
+					type = TokenType.LET,
+					literal = "let"
+				),
+				name = Identifier(
+					token = Token(
+						type = TokenType.IDENT,
+						literal = "myVar2"
+					),
+					value = "myVar2"
+				),
+				value = Identifier(
+					token = Token(
+						type = TokenType.IDENT,
+						literal = "anotherVar2"
+					),
+					value = "anotherVar2"
+				)
+			)
+		)
+		"programの文字列はlet myVar = anotherVar;let myVar2 = anotherVar2;である"{ program.string() shouldBe "let myVar = anotherVar;let myVar2 = anotherVar2;" }
+		"program.statements.sizeは2"{ program.statements.size shouldBe 2 }
 	}
 })

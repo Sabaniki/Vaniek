@@ -114,7 +114,7 @@ class Lexer(private val input: String) {
 						return Token(type, literal)
 					}
 					ch.isDigit() -> {
-						val (type, literal) = readIdentifier()
+						val (type, literal) = readNumber()
 						return Token(type, literal)
 					}
 					else -> Token(TokenType.ILLEGAL, ch.toString())
