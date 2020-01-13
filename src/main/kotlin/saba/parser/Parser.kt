@@ -6,10 +6,10 @@ import saba.token.TokenType
 import saba.ast.Expression
 import saba.ast.Identifier
 import saba.ast.Program
+import saba.ast.statement.ExpressionStatement
 import saba.ast.statement.LetStatement
 import saba.ast.statement.ReturnStatement
 import saba.ast.statement.Statement
-import kotlin.math.ln
 
 class Parser(val lexer: Lexer) {
 	var currentToken: Token? = null
@@ -18,8 +18,13 @@ class Parser(val lexer: Lexer) {
 	val infixParseFns = mutableMapOf<TokenType, (Expression) -> Expression>()
 	val errors = mutableListOf<String>()
 	
-	init {  // 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
+	init {
+		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
+	}
+	
+	private fun parseIdentifier(): () -> Expression = {
+		Identifier(checkedCurrentToken(), checkedCurrentTokenLiteral())
 	}
 	
 	fun nextToken() {
@@ -41,13 +46,25 @@ class Parser(val lexer: Lexer) {
 		return when (currentToken?.type) {
 			TokenType.LET -> parseLetStatement()
 			TokenType.RETURN -> parseReturnStatement()
-			else -> null
+			else -> parseExpressionStatement()
 		}
+	}
+	
+	private fun parseExpressionStatement(): ExpressionStatement {
+		val statement = ExpressionStatement(checkedCurrentToken(), parseExpression())
+		
+		if (peekTokenIs(TokenType.SEMICOLON)) nextToken()
+		return statement
+	}
+	
+	private fun parseExpression(): Expression? {
+		val prefix = prefixParseFns[currentToken?.type] ?: return null
+		return prefix()
 	}
 	
 	private fun parseReturnStatement(): Statement {
 		val returnStatement = ReturnStatement(
-			token = currentToken ?: Token(TokenType.ILLEGAL, ""),
+			checkedCurrentToken(),
 			returnValue = null  // TODO: 本当はここにちゃんとした値が入る
 		)
 		nextToken()
@@ -63,10 +80,7 @@ class Parser(val lexer: Lexer) {
 		
 		if (!expectPeek(TokenType.IDENT)) return null
 		
-		val name = Identifier(
-			token = currentToken ?: Token(TokenType.ILLEGAL, ""),
-			value = currentToken?.literal ?: ""
-		)
+		val name = Identifier(checkedCurrentToken(), checkedCurrentTokenLiteral())
 		
 		if (!expectPeek(TokenType.ASSIGN)) return null
 		
@@ -101,6 +115,14 @@ class Parser(val lexer: Lexer) {
 		val errorMessage = "expected next token to be $tokenType, got ${peekToken?.type} instead"
 		errors.add(errorMessage)
 	}
+	
+	private fun checkedCurrentToken() =
+		currentToken ?: Token(
+			type = TokenType.ILLEGAL,
+			literal = ""
+		)
+	
+	private fun checkedCurrentTokenLiteral() = currentToken?.literal ?: ""
 	
 	fun registerPrefix(tokenType: TokenType, function: () -> Expression) {
 		prefixParseFns[tokenType] = function
