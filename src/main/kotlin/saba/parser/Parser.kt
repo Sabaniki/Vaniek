@@ -23,9 +23,7 @@ class Parser(val lexer: Lexer) {
 		repeat(2) { nextToken() }
 	}
 	
-	private fun parseIdentifier(): () -> Expression = {
-		Identifier(checkedCurrentToken(), checkedCurrentTokenLiteral())
-	}
+	private fun parseIdentifier() = Identifier(checkedCurrentToken(), checkedCurrentToken().literal)
 	
 	fun nextToken() {
 		currentToken = peekToken
@@ -76,18 +74,18 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	private fun parseLetStatement(): Statement? {
-		val token = currentToken
+		val token = checkedCurrentToken()
 		
 		if (!expectPeek(TokenType.IDENT)) return null
 		
-		val name = Identifier(checkedCurrentToken(), checkedCurrentTokenLiteral())
+		val name = Identifier(checkedCurrentToken(), checkedCurrentToken().literal)
 		
 		if (!expectPeek(TokenType.ASSIGN)) return null
 		
 		val statement = LetStatement(
-			token = token ?: Token(TokenType.ILLEGAL, ""),
-			name = name,
-			value = null    // TODO: 本当はここにちゃんとした値が入る
+			token,
+			name,
+			null    // TODO: 本当はここにちゃんとした値が入る
 		)
 		
 		// TODO: セミコロンに遭遇するまで式を読み飛ばしてしまっている
@@ -122,7 +120,7 @@ class Parser(val lexer: Lexer) {
 			literal = ""
 		)
 	
-	private fun checkedCurrentTokenLiteral() = currentToken?.literal ?: ""
+	
 	
 	fun registerPrefix(tokenType: TokenType, function: () -> Expression) {
 		prefixParseFns[tokenType] = function
