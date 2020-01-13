@@ -1,10 +1,8 @@
 package saba.parser
 
-import arrow.core.Left
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.ShouldSpec
 import saba.ast.statement.LetStatement
-import saba.ast.statement.Statement
 import saba.lexer.Lexer
 
 class ParseLetStatementTest : ShouldSpec({
