@@ -43,7 +43,7 @@ class Parser(val lexer: Lexer) {
 		val value = checkedCurrentToken().literal.toIntOrNull()
 		if (value == null) {
 			errors.add("could not parse ${checkedCurrentToken().literal}")
-			return IntegerLiteral(Token(TokenType.IDENT, ""), Int.MIN_VALUE)
+			return IntegerLiteral(Token(TokenType.ILLEGAL, ""), Int.MIN_VALUE)
 		}
 		
 		return IntegerLiteral(
