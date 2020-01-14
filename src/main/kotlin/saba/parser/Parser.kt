@@ -3,10 +3,11 @@ package saba.parser
 import saba.lexer.Lexer
 import saba.token.Token
 import saba.token.TokenType
-import saba.ast.Expression
+import saba.ast.expresssion.Expression
 import saba.ast.Identifier
 import saba.ast.IntegerLiteral
 import saba.ast.Program
+import saba.ast.expresssion.PrefixExpression
 import saba.ast.statement.ExpressionStatement
 import saba.ast.statement.LetStatement
 import saba.ast.statement.ReturnStatement
@@ -22,7 +23,15 @@ class Parser(val lexer: Lexer) {
 	init {
 		// Identifier用のprefixを追加
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
+		
+		// IntegerLiteral用のprefixを追加
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
+		
+		// parsePrefixExpressionのBANG用のprefixを追加
+		registerPrefix(TokenType.BANG, ::parsePrefixExpression)
+		
+		// parsePrefixExpressionのMINUS用のprefixを追加
+		registerPrefix(TokenType.MINUS, ::parsePrefixExpression)
 		
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
@@ -41,6 +50,12 @@ class Parser(val lexer: Lexer) {
 			checkedCurrentToken(),
 			checkedCurrentToken().literal.toInt()
 		)
+	}
+	
+	fun parsePrefixExpression(): Expression {
+		val startToken = checkedCurrentToken()
+		nextToken()
+		return  PrefixExpression(startToken, startToken.literal, parseExpression())
 	}
 	
 	fun nextToken() {

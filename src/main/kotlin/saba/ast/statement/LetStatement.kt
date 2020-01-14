@@ -1,6 +1,6 @@
 package saba.ast.statement
 
-import saba.ast.Expression
+import saba.ast.expresssion.Expression
 import saba.ast.Identifier
 import saba.ast.Node
 import saba.token.Token
