@@ -55,7 +55,7 @@ class Parser(val lexer: Lexer) {
 	fun parsePrefixExpression(): Expression {
 		val firstToken = checkedCurrentToken()
 		nextToken()
-		return  PrefixExpression(firstToken, firstToken.literal, parseExpression(Priority.PREFIX))
+		return PrefixExpression(firstToken, firstToken.literal, parseExpression(Priority.PREFIX))
 	}
 	
 	fun nextToken() {
@@ -89,8 +89,12 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	private fun parseExpression(priority: Priority): Expression? {
-		val prefix = prefixParseFns[currentToken?.type] ?: return null
-		return prefix()
+		val prefix = prefixParseFns[currentToken?.type]
+		return if (prefix == null) {
+			noPrefixParseFnError(checkedCurrentToken())
+			null
+		}
+		else prefix()
 	}
 	
 	private fun parseReturnStatement(): Statement {
@@ -160,4 +164,8 @@ class Parser(val lexer: Lexer) {
 	fun registerInfix(tokenType: TokenType, function: (Expression) -> Expression) {
 		infixParseFns[tokenType] = function
 	}
+	
+	fun noPrefixParseFnError(token: Token) =
+		errors.add("no prefix parse function for for { Token: ${token.type}, Literal ${token.literal}}")
+	
 }
