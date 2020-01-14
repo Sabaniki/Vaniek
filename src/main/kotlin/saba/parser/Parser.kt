@@ -53,9 +53,9 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	fun parsePrefixExpression(): Expression {
-		val startToken = checkedCurrentToken()
+		val firstToken = checkedCurrentToken()
 		nextToken()
-		return  PrefixExpression(startToken, startToken.literal, parseExpression())
+		return  PrefixExpression(firstToken, firstToken.literal, parseExpression())
 	}
 	
 	fun nextToken() {
