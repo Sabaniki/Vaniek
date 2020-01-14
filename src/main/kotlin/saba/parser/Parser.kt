@@ -55,7 +55,7 @@ class Parser(val lexer: Lexer) {
 	fun parsePrefixExpression(): Expression {
 		val firstToken = checkedCurrentToken()
 		nextToken()
-		return  PrefixExpression(firstToken, firstToken.literal, parseExpression())
+		return  PrefixExpression(firstToken, firstToken.literal, parseExpression(Priority.PREFIX))
 	}
 	
 	fun nextToken() {
@@ -82,13 +82,13 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	private fun parseExpressionStatement(): ExpressionStatement {
-		val statement = ExpressionStatement(checkedCurrentToken(), parseExpression())
+		val statement = ExpressionStatement(checkedCurrentToken(), parseExpression(Priority.LOWEST))
 		
 		if (peekTokenIs(TokenType.SEMICOLON)) nextToken()
 		return statement
 	}
 	
-	private fun parseExpression(): Expression? {
+	private fun parseExpression(priority: Priority): Expression? {
 		val prefix = prefixParseFns[currentToken?.type] ?: return null
 		return prefix()
 	}
