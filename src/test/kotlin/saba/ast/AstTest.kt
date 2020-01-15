@@ -54,7 +54,7 @@ class LetStatementTest : ShouldSpec({
 				)
 			)
 		)
-		"programの文字列はlet myVar = anotherVar;let myVar2 = anotherVar2;である"{ program.string() shouldBe "let myVar = anotherVar;let myVar2 = anotherVar2;" }
+		"programの文字列はlet myVar = anotherVar;let myVar2 = anotherVar2;である"{ program.toString() shouldBe "let myVar = anotherVar;let myVar2 = anotherVar2;" }
 		"program.statements.sizeは2"{ program.statements.size shouldBe 2 }
 	}
 })

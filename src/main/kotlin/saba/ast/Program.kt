@@ -7,9 +7,9 @@ class Program(
 ) : Node {
 	override fun tokenLiteral() = if (statements.isNotEmpty()) statements[0].tokenLiteral() else ""
 	
-	override fun string(): String {
+	override fun toString(): String {
 		var infoString = ""
-		for (statement in statements) infoString += statement.string()
+		for (statement in statements) infoString += statement.toString()
 		return infoString
 	}
 	

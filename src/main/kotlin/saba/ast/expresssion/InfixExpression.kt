@@ -4,11 +4,11 @@ import saba.token.Token
 
 class InfixExpression(
 	val token: Token,   // 演算子トークン、例えば'+'
-	val leftValue: Expression,
+	val leftExpression: Expression?,
 	val operator: String,
-	val rightValue: Expression
-): Expression {
+	val rightExpression: Expression?
+) : Expression {
 	override fun tokenLiteral() = token.literal
 	
-	override fun string() = "(" + leftValue.string() + operator + rightValue.string() + ")"
+	override fun toString() = "($leftExpression $operator $rightExpression)"
 }

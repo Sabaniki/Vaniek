@@ -10,6 +10,6 @@ class IntegerLiteral(
 	
 	override fun tokenLiteral() = token.literal
 	
-	override fun string() = token.literal
+	override fun toString() = token.literal
 	
 }

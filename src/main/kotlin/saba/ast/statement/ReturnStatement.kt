@@ -10,10 +10,10 @@ class ReturnStatement(
 ): Node, Statement {
 	override fun tokenLiteral() = token.literal
 	
-	override fun string(): String {
+	override fun toString(): String {
 		var infoString = tokenLiteral() + " "
 		
-		infoString += returnValue?.string()
+		infoString += returnValue?.toString()
 		infoString += ";"
 		
 		return infoString

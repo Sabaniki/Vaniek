@@ -12,9 +12,9 @@ class LetStatement(
 ): Node, Statement {
 	override fun tokenLiteral() = token.literal
 	
-	override fun string(): String {
-		var infoString = tokenLiteral() + " " + name.string() + " = "
-		infoString += value?.string()
+	override fun toString(): String {
+		var infoString = tokenLiteral() + " " + name.toString() + " = "
+		infoString += value?.toString()
 		infoString += ";"
 		
 		return infoString

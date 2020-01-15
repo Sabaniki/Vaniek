@@ -7,6 +7,7 @@ import saba.ast.expresssion.Expression
 import saba.ast.Identifier
 import saba.ast.IntegerLiteral
 import saba.ast.Program
+import saba.ast.expresssion.InfixExpression
 import saba.ast.expresssion.PrefixExpression
 import saba.ast.statement.ExpressionStatement
 import saba.ast.statement.LetStatement
@@ -16,22 +17,34 @@ import saba.ast.statement.Statement
 class Parser(val lexer: Lexer) {
 	var currentToken: Token? = null
 	var peekToken: Token? = null
-	val prefixParseFns = mutableMapOf<TokenType, () -> Expression?>()
+	val prefixParseFns = mutableMapOf<TokenType, () -> Expression>()
 	val infixParseFns = mutableMapOf<TokenType, (Expression) -> Expression>()
 	val errors = mutableListOf<String>()
+	val precedences = mapOf(
+		TokenType.EQ to Precedence.EQUALS,
+		TokenType.NOT_EQ to Precedence.EQUALS,
+		TokenType.LT to Precedence.LESS_OR_GREATER,
+		TokenType.GT to Precedence.LESS_OR_GREATER,
+		TokenType.PLUS to Precedence.SUM,
+		TokenType.MINUS to Precedence.SUM,
+		TokenType.SLASH to Precedence.PRODUCT,
+		TokenType.ASTERISK to Precedence.PRODUCT
+	)
 	
 	init {
-		// Identifier用のprefixを追加
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
-		
-		// IntegerLiteral用のprefixを追加
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
-		
-		// parsePrefixExpressionのBANG用のprefixを追加
 		registerPrefix(TokenType.BANG, ::parsePrefixExpression)
-		
-		// parsePrefixExpressionのMINUS用のprefixを追加
 		registerPrefix(TokenType.MINUS, ::parsePrefixExpression)
+		
+		registerInfix(TokenType.PLUS, ::parseInfixExpression)
+		registerInfix(TokenType.MINUS, ::parseInfixExpression)
+		registerInfix(TokenType.SLASH, ::parseInfixExpression)
+		registerInfix(TokenType.ASTERISK, ::parseInfixExpression)
+		registerInfix(TokenType.EQ, ::parseInfixExpression)
+		registerInfix(TokenType.NOT_EQ, ::parseInfixExpression)
+		registerInfix(TokenType.LT, ::parseInfixExpression)
+		registerInfix(TokenType.GT, ::parseInfixExpression)
 		
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
@@ -52,10 +65,17 @@ class Parser(val lexer: Lexer) {
 		)
 	}
 	
-	fun parsePrefixExpression(): Expression {
-		val firstToken = checkedCurrentToken()
+	private fun parsePrefixExpression(): Expression {
+		val beforeToken = checkedCurrentToken()
 		nextToken()
-		return PrefixExpression(firstToken, firstToken.literal, parseExpression(Priority.PREFIX))
+		return PrefixExpression(beforeToken, beforeToken.literal, parseExpression(Precedence.PREFIX))
+	}
+	
+	private fun parseInfixExpression(leftExpression: Expression): Expression {
+		val beforeToken = checkedCurrentToken()
+		val precedence = currentPrecedence()
+		nextToken()
+		return InfixExpression(beforeToken, leftExpression, beforeToken.literal, parseExpression(precedence))
 	}
 	
 	fun nextToken() {
@@ -82,19 +102,26 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	private fun parseExpressionStatement(): ExpressionStatement {
-		val statement = ExpressionStatement(checkedCurrentToken(), parseExpression(Priority.LOWEST))
+		val statement = ExpressionStatement(checkedCurrentToken(), parseExpression(Precedence.LOWEST))
 		
 		if (peekTokenIs(TokenType.SEMICOLON)) nextToken()
 		return statement
 	}
 	
-	private fun parseExpression(priority: Priority): Expression? {
+	private fun parseExpression(precedence: Precedence): Expression? {
 		val prefix = prefixParseFns[currentToken?.type]
-		return if (prefix == null) {
+		var leftExpression = if (prefix == null) {
 			noPrefixParseFnError(checkedCurrentToken())
-			null
+			return null
 		}
 		else prefix()
+		
+		while (!peekTokenIs(TokenType.SEMICOLON) && precedence < peekPrecedence()) {
+			val infix = infixParseFns[checkedPeekToken().type] ?: return leftExpression
+			nextToken()
+			leftExpression = infix(leftExpression)
+		}
+		return leftExpression
 	}
 	
 	private fun parseReturnStatement(): Statement {
@@ -157,15 +184,24 @@ class Parser(val lexer: Lexer) {
 			literal = ""
 		)
 	
-	fun registerPrefix(tokenType: TokenType, function: () -> Expression) {
+	private fun checkedPeekToken() =
+		peekToken ?: Token(
+			type = TokenType.ILLEGAL,
+			literal = ""
+		)
+	
+	private fun peekPrecedence() = precedences[checkedPeekToken().type] ?: Precedence.LOWEST
+	private fun currentPrecedence() = precedences[checkedCurrentToken().type] ?: Precedence.LOWEST
+	
+	private fun registerPrefix(tokenType: TokenType, function: () -> Expression) {
 		prefixParseFns[tokenType] = function
 	}
 	
-	fun registerInfix(tokenType: TokenType, function: (Expression) -> Expression) {
+	private fun registerInfix(tokenType: TokenType, function: (Expression) -> Expression) {
 		infixParseFns[tokenType] = function
 	}
 	
-	fun noPrefixParseFnError(token: Token) =
+	private fun noPrefixParseFnError(token: Token) =
 		errors.add("no prefix parse function for for { Token: ${token.type}, Literal ${token.literal}}")
 	
 }

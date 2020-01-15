@@ -10,5 +10,5 @@ class Identifier(
 	
 	override fun tokenLiteral() = token.literal
 	
-	override fun string() = value
+	override fun toString() = value
 }

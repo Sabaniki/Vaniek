@@ -57,11 +57,11 @@ class ParsingInfixExpressionTest : ShouldSpec({
 		"${i}番目のstatementはExpresionStatement" { (statement == null) shouldBe false }
 		"${i}番目のexpressionはinfixExpression" { (expression == null) shouldBe false }
 		
-		testIntegerLiteral(Term.L, infixExpression?.leftValue, infixTest.leftValue, i)
+		testIntegerLiteral(Term.L, infixExpression?.leftExpression, infixTest.leftValue, i)
 		"${i}番目のinfixExpressionのオペレータは${infixTest.operator}" {
 			infixExpression?.operator shouldBe infixTest.operator
 		}
-		testIntegerLiteral(Term.R, infixExpression?.rightValue, infixTest.rightValue, i)
+		testIntegerLiteral(Term.R, infixExpression?.rightExpression, infixTest.rightValue, i)
 		
 	}
 })

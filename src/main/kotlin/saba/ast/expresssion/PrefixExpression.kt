@@ -9,5 +9,5 @@ class PrefixExpression(
 ) : Expression {
 	override fun tokenLiteral() = token.literal
 	
-	override fun string() = "(" + operator + right?.string() + ")"
+	override fun toString() = "(" + operator + right?.toString() + ")"
 }
