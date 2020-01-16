@@ -8,6 +8,7 @@ class Lexer(private val input: String) {
 	var position = 0
 	var readPosition = 0
 	var ch: Char = Char.MIN_VALUE
+	var beforeToken = Token(TokenType.ILLEGAL, "")
 	
 	init {
 		readChar()
@@ -25,13 +26,22 @@ class Lexer(private val input: String) {
 		readPosition++
 	}
 	
-	fun readIdentifier(): Pair<TokenType, String> {
+	private fun readLiteral(): String {
 		val startPosition = position
 		while (ch.isLetter()) { // TODO: 変数の一部などにアンダースコアがあっちゃだめ
 			readChar()
 		}
-		val literal = input.slice(startPosition until position)
-		return Pair(TokenKeywords.lookUpIdent(literal), literal)
+		return input.slice(startPosition until position)
+	}
+	
+	fun readIdentifier(): Pair<TokenType, String> {
+		val literal = readLiteral()
+		return TokenKeywords.lookUpIdent(literal) to literal
+	}
+	
+	fun readType(): Pair<TokenType, String> {
+		val literal = readLiteral()
+		return TokenType.TYPE to literal
 	}
 	
 	fun readNumber(): Pair<TokenType, String> {
@@ -54,7 +64,7 @@ class Lexer(private val input: String) {
 		}
 		val literal = input.slice(startPosition until position)
 		
-		return Pair(tokenResult, literal)
+		return tokenResult to literal
 	}
 	
 	fun peekChar(): Char {
@@ -112,7 +122,9 @@ class Lexer(private val input: String) {
 			else ->
 				when {
 					ch.isLetter() -> {
-						val (type, literal) = readIdentifier()
+						val (type, literal) =
+							if (beforeToken.type == TokenType.COLON) readType()
+							else readIdentifier()
 						return Token(type, literal)
 					}
 					ch.isDigit() -> {
@@ -123,6 +135,7 @@ class Lexer(private val input: String) {
 				}
 		}
 		readChar()
+		beforeToken = token
 		return token
 	}
 	

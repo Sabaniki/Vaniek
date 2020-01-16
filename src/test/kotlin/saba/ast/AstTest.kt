@@ -20,14 +20,16 @@ class LetStatementTest : ShouldSpec({
 							type = TokenType.IDENT,
 							literal = "myVar"
 						),
-						value = "myVar"
+						value = "myVar",
+						type = "testType"
 					),
 					value = Identifier(
 						token = Token(
 							type = TokenType.IDENT,
 							literal = "anotherVar"
 						),
-						value = "anotherVar"
+						value = "anotherVar",
+						type = "testType2"
 					)
 				)
 			)
@@ -43,14 +45,16 @@ class LetStatementTest : ShouldSpec({
 						type = TokenType.IDENT,
 						literal = "myVar2"
 					),
-					value = "myVar2"
+					value = "myVar2",
+					type = "testType"
 				),
 				value = Identifier(
 					token = Token(
 						type = TokenType.IDENT,
 						literal = "anotherVar2"
 					),
-					value = "anotherVar2"
+					value = "anotherVar2",
+					type = "testType2"
 				)
 			)
 		)

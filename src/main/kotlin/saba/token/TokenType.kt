@@ -40,4 +40,6 @@ enum class TokenType {
 	IF,
 	ELSE,
 	RETURN,
+	
+	TYPE
 }

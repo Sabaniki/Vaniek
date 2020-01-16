@@ -7,10 +7,16 @@ import saba.lexer.Lexer
 
 class ParseLetStatementTest : ShouldSpec({
 	
+	class TestSet(
+		val nameValue: String,
+		val type: String
+	)
+	
+	
 	val input = """
-	let x = 5;
-	let y = 10;
-	let foobar = 838383;
+	let x: Int = 5;
+	let y: Int = 10;
+	let foobar: Int = 838383;
 	"""
 	val lexer = Lexer(input)
 	val parser = Parser(lexer)
@@ -20,14 +26,18 @@ class ParseLetStatementTest : ShouldSpec({
 	"program.statements.sizeは3" { program.statements.size shouldBe 3 }
 	
 	val tests = listOf(
-		Pair("x", program.statements[0]),
-		Pair("y", program.statements[1]),
-		Pair("foobar", program.statements[2])
+		TestSet("x", "Int"),
+		TestSet("y", "Int"),
+		TestSet("foobar", "Int")
 	)
 	for ((i, test) in tests.withIndex()) {
-		"${i}番目のtokenLiteralは 'let' "{ test.second.tokenLiteral() shouldBe "let" }
-		"${i}番目のstatementのname.valueはPairの片割れに等しい"{ (test.second as LetStatement).name.value shouldBe test.first }
-		"${i}番目のstatementのname.tokenLiteral()はPairの片割れに等しい"{ (test.second as LetStatement).name.tokenLiteral() shouldBe test.first }
+		"${i}番目のtokenLiteralは 'let' "{ program.statements[i].tokenLiteral() shouldBe "let" }
+		"${i}番目のstatementのname.valueはPairの片割れに等しい"{ (
+				program.statements[i] as? LetStatement)?.name?.value shouldBe test.nameValue
+		}
+		"${i}番目のstatementのname.tokenLiteral()はPairの片割れに等しい"{
+			(program.statements[i] as? LetStatement)?.name?.tokenLiteral() shouldBe test.nameValue
+		}
 	}
 })
 

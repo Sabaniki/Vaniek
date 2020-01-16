@@ -5,7 +5,8 @@ import saba.token.Token
 
 class Identifier(
 	val token: Token,
-	val value: String
+	val value: String,
+	val type: String
 ): Expression, Node {
 	
 	override fun tokenLiteral() = token.literal

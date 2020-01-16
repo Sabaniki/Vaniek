@@ -53,7 +53,7 @@ class Parser(val lexer: Lexer) {
 		repeat(2) { nextToken() }
 	}
 	
-	private fun parseIdentifier() = Identifier(checkedCurrentToken(), checkedCurrentToken().literal)
+	private fun parseIdentifier() = Identifier(checkedCurrentToken(), checkedCurrentToken().literal, "") //TODO
 	
 	private fun parseIntegerLiteral(): Expression {
 		val value = checkedCurrentToken().literal.toIntOrNull()
@@ -158,7 +158,17 @@ class Parser(val lexer: Lexer) {
 		
 		if (!expectPeek(TokenType.IDENT)) return null
 		
-		val name = Identifier(checkedCurrentToken(), checkedCurrentToken().literal)
+		val identifierToken = checkedCurrentToken()
+		val typeLiteral: String
+		
+		if (expectPeek(TokenType.COLON)) {
+			nextToken() // Type
+			typeLiteral = checkedCurrentToken().literal
+		}
+		else return null
+		
+		val name = Identifier(identifierToken, identifierToken.literal, typeLiteral)// ← TODO
+		
 		
 		if (!expectPeek(TokenType.ASSIGN)) return null
 		

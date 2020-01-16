@@ -30,6 +30,8 @@ class LexerTest : ShouldSpec(
 				10 == 10;
 				10 != 9;
 				let a = 10.0;
+				
+				let a: int = 10;
 		"""
 		val lexer = Lexer(input)
 		"TypeとLiteralが合致するかどうか" {
@@ -134,12 +136,20 @@ class LexerTest : ShouldSpec(
 				Token(TokenType.INT, "9"),
 				Token(TokenType.SEMICOLON, ";"),
 			
-				// let a = 10..0
+				// let a = 10.0
 				Token(TokenType.LET, "let"),
 				Token(TokenType.IDENT, "a"),
 				Token(TokenType.ASSIGN, "="),
 				Token(TokenType.FLOAT, "10.0"),
-				Token(TokenType.SEMICOLON, ";")
+				Token(TokenType.SEMICOLON, ";"),
+				
+				// let a: Int = 10;
+				Token(TokenType.LET, "let"),
+				Token(TokenType.IDENT, "a"),
+				Token(TokenType.COLON, ":"),
+				Token(TokenType.TYPE, "int"),  //TODO: 本当はTokenTypeはIDNETじゃなくてINTだけどまだいいや
+				Token(TokenType.ASSIGN, "="),
+				Token(TokenType.INT, "10")
 			)
 			
 			for ((i, test) in tests.withIndex()) {

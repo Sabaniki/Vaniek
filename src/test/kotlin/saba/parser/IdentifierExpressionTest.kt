@@ -7,7 +7,7 @@ import saba.ast.statement.ExpressionStatement
 import saba.lexer.Lexer
 
 class IdentifierExpressionTest : ShouldSpec({
-	val input = "foobar;"
+	val input = "foobar: string;"
 	val lexer = Lexer(input)
 	val parser = Parser(lexer)
 	val program = parser.parseProgram()
