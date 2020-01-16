@@ -6,7 +6,7 @@ import saba.ast.IntegerLiteral
 import saba.ast.expresssion.Expression
 import saba.lexer.Lexer
 
-class OperatorPrecedenceParsingTest : ShouldSpec({
+class ParsingOperatorPrecedenceTest : ShouldSpec({
 	class OperatorTest(
 		val input: String,
 		val expected: String
@@ -27,7 +27,7 @@ class OperatorPrecedenceParsingTest : ShouldSpec({
 		OperatorTest("3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"),
 		OperatorTest("-a", "(-a)"),
 		OperatorTest("+a", "(+a)"),
-		OperatorTest("1.00 + 2.23 + 1.42", "((1.00 + 2.23) + 1.42)")
+		OperatorTest("1.0 + 2.23 + 1.42", "((1.0 + 2.23) + 1.42)")
 		)
 	for ((i, operatorTest) in operatorTests.withIndex()) {
 		val input = operatorTest.input
