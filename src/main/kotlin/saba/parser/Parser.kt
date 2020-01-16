@@ -1,5 +1,6 @@
 package saba.parser
 
+import saba.ast.FloatLiteral
 import saba.lexer.Lexer
 import saba.token.Token
 import saba.token.TokenType
@@ -34,6 +35,7 @@ class Parser(val lexer: Lexer) {
 	init {
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
+		registerPrefix(TokenType.FLOAT, ::parseFloatLiteral)
 		registerPrefix(TokenType.BANG, ::parsePrefixExpression)
 		registerPrefix(TokenType.MINUS, ::parsePrefixExpression)
 		registerPrefix(TokenType.PLUS, ::parsePrefixExpression)
@@ -63,6 +65,19 @@ class Parser(val lexer: Lexer) {
 		return IntegerLiteral(
 			checkedCurrentToken(),
 			checkedCurrentToken().literal.toInt()
+		)
+	}
+	
+	private fun parseFloatLiteral(): Expression {
+		val value = checkedCurrentToken().literal.toFloatOrNull()
+		if (value == null) {
+			errors.add("could not parse ${checkedCurrentToken().literal}")
+			return FloatLiteral(Token(TokenType.ILLEGAL, ""), Float.MIN_VALUE)
+		}
+		
+		return FloatLiteral(
+			checkedCurrentToken(),
+			checkedCurrentToken().literal.toFloat()
 		)
 	}
 	
