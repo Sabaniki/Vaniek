@@ -6,6 +6,6 @@ enum class Precedence {
 	LESS_OR_GREATER, // > または <
 	SUM, // +
 	PRODUCT,     // *
-	PREFIX,  // -X または !X
+	PREFIX,  // -X または !X または +X
 	CALL // myFunction(X)
 }
