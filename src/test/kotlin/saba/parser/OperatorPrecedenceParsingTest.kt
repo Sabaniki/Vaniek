@@ -12,14 +12,6 @@ class OperatorPrecedenceParsingTest : ShouldSpec({
 		val expected: String
 	)
 	
-	fun testIntegerLiteral(term: Term, expression: Expression?, value: Int, i: Int) {
-		val integerLiteral = expression as? IntegerLiteral
-		val side = if (term == Term.L) "左辺" else "右辺"
-		"${i}番目の${side}のexpressionはIntegerLiteral"{ (integerLiteral == null) shouldBe false }
-		"${i}番目の${side}のintegerLiteral.valueと期待されるvalueは等しい"{ integerLiteral?.value shouldBe value }
-		"${i}番目の${side}のintegerLiteral.tokenLiteral()はvalue.toString()と等しい"{ integerLiteral?.tokenLiteral() shouldBe value.toString() }
-	}
-	
 	val operatorTests = listOf(
 		OperatorTest("-a * b", "((-a) * b)"),
 		OperatorTest("!-a", "(!(-a))"),
@@ -50,4 +42,3 @@ class OperatorPrecedenceParsingTest : ShouldSpec({
 		"${i}番目の構文解析結果は${operatorTest.expected}" { program.toString() shouldBe operatorTest.expected }
 	}
 })
-
