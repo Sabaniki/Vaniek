@@ -95,6 +95,8 @@ class Lexer(private val input: String) {
 				Token(TokenType.GT, ch.toString())
 			';' ->
 				Token(TokenType.SEMICOLON, ch.toString())
+			':' ->
+				Token(TokenType.COLON, ch.toString())
 			'(' ->
 				Token(TokenType.LPAREN, ch.toString())
 			')' ->
