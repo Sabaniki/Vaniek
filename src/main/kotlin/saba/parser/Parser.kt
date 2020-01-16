@@ -109,7 +109,7 @@ class Parser(val lexer: Lexer) {
 		return program
 	}
 	
-	fun parseStatement(): Statement? {
+	private fun parseStatement(): Statement? {
 		return when (currentToken?.type) {
 			TokenType.LET -> parseLetStatement()
 			TokenType.RETURN -> parseReturnStatement()

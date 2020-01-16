@@ -25,6 +25,7 @@ enum class TokenType {
 	// デリミタ
 	COMMA,
 	SEMICOLON,
+	COLON,
 	
 	LPAREN,
 	RPAREN,
