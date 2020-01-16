@@ -36,6 +36,7 @@ class Parser(val lexer: Lexer) {
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
 		registerPrefix(TokenType.BANG, ::parsePrefixExpression)
 		registerPrefix(TokenType.MINUS, ::parsePrefixExpression)
+		registerPrefix(TokenType.PLUS, ::parsePrefixExpression)
 		
 		registerInfix(TokenType.PLUS, ::parseInfixExpression)
 		registerInfix(TokenType.MINUS, ::parseInfixExpression)
