@@ -23,13 +23,16 @@ class InfixExpressionTest : ShouldSpec({
 	
 	fun testIdentifier(expression: Expression?, value: String, i: Int, LR: String) {
 		val identifier = expression as? Identifier
-		"${i}番目の${LR}辺のexpressionはIntegerLiteral"{ (identifier == null) shouldBe false }
-		"${i}番目の${LR}辺のintegerLiteral.valueと期待されるvalueは等しい"{ identifier?.value shouldBe value }
-		"${i}番目の${LR}辺のintegerLiteral.tokenLiteral()はvalue.toString()と等しい"{ identifier?.tokenLiteral() shouldBe value }
+		"${i}番目の${LR}辺のexpressionはIdentifier"{ (identifier == null) shouldBe false }
+		"${i}番目の${LR}辺のIdentifier.valueと期待されるvalueは等しい"{ identifier?.value shouldBe value }
+		"${i}番目の${LR}辺のIdentifier.tokenLiteral()はvalue.toString()と等しい"{ identifier?.tokenLiteral() shouldBe value }
 	}
 	
 	fun testBooleanLiteral(expression: Expression?, value: Boolean, i: Int, LR: String) {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+		val boolean = expression as? saba.ast.Boolean
+		"${i}番目の${LR}辺のexpressionはBoolean"{ (boolean == null) shouldBe false }
+		"${i}番目の${LR}辺のBoolean.valueと期待されるvalueは等しい"{ boolean?.value shouldBe value }
+		"${i}番目の${LR}辺のBoolean.tokenLiteral()はvalue.toString()と等しい"{ boolean?.tokenLiteral() shouldBe value.toString() }
 	}
 	
 	fun testLiteralExpression(expression: Expression?, expected: Any, i: Int, LR: String) {
@@ -74,10 +77,10 @@ class InfixExpressionTest : ShouldSpec({
 		InfixTest("foo > bar;", "foo", ">", "bar"),
 		InfixTest("foo < bar;", "foo", "<", "bar"),
 		InfixTest("foo == bar;", "foo", "==", "bar"),
-		InfixTest("foo != bar;", "foo", "!=", "bar")
-//		InfixTest("true == true;", true, "==", true),
-//		InfixTest("true != false;", true, "!=", false),
-//		InfixTest("false = false;", false, "==", false)
+		InfixTest("foo != bar;", "foo", "!=", "bar"),
+		InfixTest("true == true;", true, "==", true),
+		InfixTest("true != false;", true, "!=", false),
+		InfixTest("false == false;", false, "==", false)
 	)
 	
 	for ((i, infixTest) in infixTests.withIndex()) {
