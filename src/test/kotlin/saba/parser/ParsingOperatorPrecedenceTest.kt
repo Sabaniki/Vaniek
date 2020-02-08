@@ -27,8 +27,12 @@ class ParsingOperatorPrecedenceTest : ShouldSpec({
 		OperatorTest("3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))"),
 		OperatorTest("-a", "(-a)"),
 		OperatorTest("+a", "(+a)"),
-		OperatorTest("1.0 + 2.23 + 1.42", "((1.0 + 2.23) + 1.42)")
-		)
+		OperatorTest("1.0 + 2.23 + 1.42", "((1.0 + 2.23) + 1.42)"),
+		OperatorTest("true", "true"),
+		OperatorTest("false", "false"),
+		OperatorTest("3 > 5 == false", "((3 > 5) == false)"),
+		OperatorTest("3 < 5 == true", "((3 < 5) == true)")
+	)
 	for ((i, operatorTest) in operatorTests.withIndex()) {
 		val input = operatorTest.input
 		val lexer = Lexer(input)
