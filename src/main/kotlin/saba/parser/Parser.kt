@@ -1,5 +1,6 @@
 package saba.parser
 
+import saba.ast.Boolean
 import saba.ast.FloatLiteral
 import saba.lexer.Lexer
 import saba.token.Token
@@ -36,6 +37,8 @@ class Parser(val lexer: Lexer) {
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
 		registerPrefix(TokenType.FLOAT, ::parseFloatLiteral)
+		registerPrefix(TokenType.TRUE, ::parseBoolean)
+		registerPrefix(TokenType.FALSE, ::parseBoolean)
 		registerPrefix(TokenType.BANG, ::parsePrefixExpression)
 		registerPrefix(TokenType.MINUS, ::parsePrefixExpression)
 		registerPrefix(TokenType.PLUS, ::parsePrefixExpression)
@@ -52,6 +55,8 @@ class Parser(val lexer: Lexer) {
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
 	}
+	
+	private fun parseBoolean(): Expression = Boolean(checkedCurrentToken(), (currentTokenIs(TokenType.TRUE)))
 	
 	private fun parseIdentifier() = Identifier(checkedCurrentToken(), checkedCurrentToken().literal, "") //TODO
 	
@@ -228,6 +233,6 @@ class Parser(val lexer: Lexer) {
 	}
 	
 	private fun noPrefixParseFnError(token: Token) =
-		errors.add("no prefix parse function for for { Token: ${token.type}, Literal ${token.literal}}")
+		errors.add("no prefix parse function for { Token: ${token.type}, Literal ${token.literal}}")
 	
 }

@@ -78,7 +78,7 @@ class InfixExpressionTest : ShouldSpec({
 //		InfixTest("true == true;", true, "==", true),
 //		InfixTest("true != false;", true, "!=", false),
 //		InfixTest("false = false;", false, "==", false)
-		)
+	)
 	
 	for ((i, infixTest) in infixTests.withIndex()) {
 		val input = infixTest.input
