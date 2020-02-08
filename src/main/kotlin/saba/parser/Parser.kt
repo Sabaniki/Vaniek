@@ -19,7 +19,7 @@ import saba.ast.statement.Statement
 class Parser(val lexer: Lexer) {
 	var currentToken: Token? = null
 	var peekToken: Token? = null
-	val prefixParseFns = mutableMapOf<TokenType, () -> Expression>()
+	val prefixParseFns = mutableMapOf<TokenType, () -> Expression?>()
 	val infixParseFns = mutableMapOf<TokenType, (Expression) -> Expression>()
 	val errors = mutableListOf<String>()
 	val precedences = mapOf(
@@ -34,6 +34,7 @@ class Parser(val lexer: Lexer) {
 	)
 	
 	init {
+		registerPrefix(TokenType.LPAREN, ::parseGroupedExpression)
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
 		registerPrefix(TokenType.FLOAT, ::parseFloatLiteral)
@@ -54,6 +55,16 @@ class Parser(val lexer: Lexer) {
 		
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
+	}
+	
+	private fun parseGroupedExpression(): Expression? {
+		nextToken()
+		val expression = parseExpression(Precedence.LOWEST)
+		if (!expectPeek(TokenType.RPAREN)) {
+			errors.add("no found ')'")
+			return null
+		}
+		return expression
 	}
 	
 	private fun parseBoolean(): Expression = Boolean(checkedCurrentToken(), (currentTokenIs(TokenType.TRUE)))
@@ -140,7 +151,7 @@ class Parser(val lexer: Lexer) {
 		while (!peekTokenIs(TokenType.SEMICOLON) && precedence < peekPrecedence()) {
 			val infix = infixParseFns[checkedPeekToken().type] ?: return leftExpression
 			nextToken()
-			leftExpression = infix(leftExpression)
+			leftExpression = infix(leftExpression?: return null)
 		}
 		return leftExpression
 	}
@@ -224,7 +235,7 @@ class Parser(val lexer: Lexer) {
 	private fun peekPrecedence() = precedences[checkedPeekToken().type] ?: Precedence.LOWEST
 	private fun currentPrecedence() = precedences[checkedCurrentToken().type] ?: Precedence.LOWEST
 	
-	private fun registerPrefix(tokenType: TokenType, function: () -> Expression) {
+	private fun registerPrefix(tokenType: TokenType, function: () -> Expression?) {
 		prefixParseFns[tokenType] = function
 	}
 	
