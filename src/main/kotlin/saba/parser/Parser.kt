@@ -17,12 +17,12 @@ import saba.ast.statement.ReturnStatement
 import saba.ast.statement.Statement
 
 class Parser(val lexer: Lexer) {
-	var currentToken: Token? = null
-	var peekToken: Token? = null
-	val prefixParseFns = mutableMapOf<TokenType, () -> Expression?>()
-	val infixParseFns = mutableMapOf<TokenType, (Expression) -> Expression>()
+	private var currentToken: Token? = null
+	private var peekToken: Token? = null
+	private val prefixParseFns = mutableMapOf<TokenType, () -> Expression?>()
+	private val infixParseFns = mutableMapOf<TokenType, (Expression) -> Expression>()
 	val errors = mutableListOf<String>()
-	val precedences = mapOf(
+	private val precedences = mapOf(
 		TokenType.EQ to Precedence.EQUALS,
 		TokenType.NOT_EQ to Precedence.EQUALS,
 		TokenType.LT to Precedence.LESS_OR_GREATER,
@@ -60,10 +60,7 @@ class Parser(val lexer: Lexer) {
 	private fun parseGroupedExpression(): Expression? {
 		nextToken()
 		val expression = parseExpression(Precedence.LOWEST)
-		if (!expectPeek(TokenType.RPAREN)) {
-			errors.add("no found ')'")
-			return null
-		}
+		if (!expectPeek(TokenType.RPAREN)) return null
 		return expression
 	}
 	
@@ -110,7 +107,7 @@ class Parser(val lexer: Lexer) {
 		return InfixExpression(beforeToken, leftExpression, beforeToken.literal, parseExpression(precedence))
 	}
 	
-	fun nextToken() {
+	private fun nextToken() {
 		currentToken = peekToken
 		peekToken = lexer.nextToken()
 	}
@@ -202,11 +199,11 @@ class Parser(val lexer: Lexer) {
 		return statement
 	}
 	
-	fun currentTokenIs(tokenType: TokenType) = currentToken?.type == tokenType
+	private fun currentTokenIs(tokenType: TokenType) = currentToken?.type == tokenType
 	
-	fun peekTokenIs(tokenType: TokenType) = peekToken?.type == tokenType
+	private fun peekTokenIs(tokenType: TokenType) = peekToken?.type == tokenType
 	
-	fun expectPeek(tokenType: TokenType) = if (peekTokenIs(tokenType)) {
+	private fun expectPeek(tokenType: TokenType) = if (peekTokenIs(tokenType)) {
 		nextToken()
 		true
 	}
@@ -215,7 +212,7 @@ class Parser(val lexer: Lexer) {
 		false
 	}
 	
-	fun peekError(tokenType: TokenType) {
+	private fun peekError(tokenType: TokenType) {
 		val errorMessage = "expected next token to be $tokenType, got ${peekToken?.type} instead"
 		errors.add(errorMessage)
 	}
