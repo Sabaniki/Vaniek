@@ -32,7 +32,7 @@ class ParsingOperatorPrecedenceTest : ShouldSpec({
 		OperatorTest("false", "false"),
 		OperatorTest("3 > 5 == false", "((3 > 5) == false)"),
 		OperatorTest("3 < 5 == true", "((3 < 5) == true)"),
-		OperatorTest("1 + ((2 + 3) + 4", "((1 + (2 + 3)) + 4)"),
+		OperatorTest("1 + (2 + 3) + 4", "((1 + (2 + 3)) + 4)"),
 		OperatorTest("(5 + 5) * 2", "((5 + 5) * 2)"),
 		OperatorTest("-(5 + 5)", "(-(5 + 5))"),
 		OperatorTest("!(true == true)", "(!(true == true))")

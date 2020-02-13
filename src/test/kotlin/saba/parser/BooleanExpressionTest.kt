@@ -3,7 +3,6 @@ package saba.parser
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.ShouldSpec
 import saba.ast.Boolean
-import saba.ast.IntegerLiteral
 import saba.ast.statement.ExpressionStatement
 import saba.lexer.Lexer
 
