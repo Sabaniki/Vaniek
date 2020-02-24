@@ -9,12 +9,10 @@ import saba.ast.expresssion.Expression
 import saba.ast.Identifier
 import saba.ast.IntegerLiteral
 import saba.ast.Program
+import saba.ast.expresssion.IfExpression
 import saba.ast.expresssion.InfixExpression
 import saba.ast.expresssion.PrefixExpression
-import saba.ast.statement.ExpressionStatement
-import saba.ast.statement.LetStatement
-import saba.ast.statement.ReturnStatement
-import saba.ast.statement.Statement
+import saba.ast.statement.*
 
 class Parser(val lexer: Lexer) {
 	private var currentToken: Token? = null
@@ -34,6 +32,7 @@ class Parser(val lexer: Lexer) {
 	)
 	
 	init {
+		registerPrefix(TokenType.IF, ::parseIfExpression)
 		registerPrefix(TokenType.LPAREN, ::parseGroupedExpression)
 		registerPrefix(TokenType.IDENT, ::parseIdentifier)
 		registerPrefix(TokenType.INT, ::parseIntegerLiteral)
@@ -55,6 +54,34 @@ class Parser(val lexer: Lexer) {
 		
 		// 2つトークンを読み込む。currentTokenとpeekTokenの両方がセットされる。
 		repeat(2) { nextToken() }
+	}
+	
+	private fun parseIfExpression(): Expression? {
+		val token = checkedCurrentToken()
+		if (!expectPeek(TokenType.LPAREN)) return null
+		nextToken()
+		val condition = parseExpression(Precedence.LOWEST) ?: return null
+		if (!expectPeek(TokenType.RPAREN) || !expectPeek(TokenType.LBRACE)) return null
+		val ifBlock = parseBlockStatement()
+		var elseBlock: BlockStatement? = null
+		if (peekTokenIs(TokenType.ELSE)) {
+			nextToken()
+			if (peekTokenIs(TokenType.LBRACE)) {
+				nextToken()
+				elseBlock = parseBlockStatement()
+			}
+		}
+		return IfExpression(token, condition, ifBlock, elseBlock)
+	}
+	
+	private fun parseBlockStatement(): BlockStatement {
+		val block = BlockStatement(checkedCurrentToken())
+		nextToken()
+		while (!currentTokenIs(TokenType.RBRACE) && !currentTokenIs(TokenType.EOF)) {
+			parseStatement()?.let { block.statements.add(it) }
+			nextToken()
+		}
+		return block
 	}
 	
 	private fun parseGroupedExpression(): Expression? {
@@ -148,7 +175,7 @@ class Parser(val lexer: Lexer) {
 		while (!peekTokenIs(TokenType.SEMICOLON) && precedence < peekPrecedence()) {
 			val infix = infixParseFns[checkedPeekToken().type] ?: return leftExpression
 			nextToken()
-			leftExpression = infix(leftExpression?: return null)
+			leftExpression = infix(leftExpression ?: return null)
 		}
 		return leftExpression
 	}

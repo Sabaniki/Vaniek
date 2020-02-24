@@ -29,7 +29,7 @@ class IfExpressionTest : ShouldSpec({
 	}
 	
 	fun testBooleanLiteral(expression: Expression?, value: kotlin.Boolean, i: Int, LR: String) {
-		val boolean = expression as? saba.ast.Boolean
+		val boolean = expression as? Boolean
 		"${i}番目の${LR}辺のexpressionはBoolean"{ (boolean == null) shouldBe false }
 		"${i}番目の${LR}辺のBoolean.valueと期待されるvalueは等しい"{ boolean?.value shouldBe value }
 		"${i}番目の${LR}辺のBoolean.tokenLiteral()はvalue.toString()と等しい"{ boolean?.tokenLiteral() shouldBe value.toString() }
@@ -54,7 +54,7 @@ class IfExpressionTest : ShouldSpec({
 		testLiteralExpression(infixExpression?.rightExpression, right, i, "右")
 	}
 	
-	val input = "if (x < y) { x }"
+	val input = "if (x < y) { x } else { y }"
 	val lexer = Lexer(input)
 	val parser = Parser(lexer)
 	val program = parser.parseProgram()
@@ -74,9 +74,9 @@ class IfExpressionTest : ShouldSpec({
 	"statementはExpresionStatement" { (statement == null) shouldBe false }
 	"expressionはIfExpression" { (expression == null) shouldBe false }
 	
-	testInfixExpression(expression, "x", "<", "y", 0)
+	testInfixExpression(expression?.condition, "x", "<", "y", 0)
 	"ifExpression.consequence.statements.sizeは1"{ ifExpression?.let { it.consequence.statements.size shouldBe 1 } }
 	"consequenceはExpressionStatement"{ (consequence == null) shouldBe false }
 	testIdentifier(consequence?.expression, "x", 0, "")
-	"ifExpression?.alternativeはnull"{ (ifExpression?.alternative == null) shouldBe true }
+	"ifExpression?.alternative.statements.sizeは1"{ ifExpression?.alternative?.let { it.statements.size shouldBe 1 } }
 })
