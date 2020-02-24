@@ -64,8 +64,7 @@ class Parser(val lexer: Lexer) {
 		if (!expectPeek(TokenType.RPAREN) || !expectPeek(TokenType.LBRACE)) return null
 		val ifBlock = parseBlockStatement()
 		var elseBlock: BlockStatement? = null
-		if (peekTokenIs(TokenType.ELSE)) {
-			nextToken()
+		if (expectPeek(TokenType.ELSE)) {
 			if (peekTokenIs(TokenType.LBRACE)) {
 				nextToken()
 				elseBlock = parseBlockStatement()
@@ -230,14 +229,15 @@ class Parser(val lexer: Lexer) {
 	
 	private fun peekTokenIs(tokenType: TokenType) = peekToken?.type == tokenType
 	
-	private fun expectPeek(tokenType: TokenType) = if (peekTokenIs(tokenType)) {
-		nextToken()
-		true
-	}
-	else {
-		peekError(tokenType)
-		false
-	}
+	private fun expectPeek(tokenType: TokenType) =
+		if (peekTokenIs(tokenType)) {
+			nextToken()
+			true
+		}
+		else {
+			peekError(tokenType)
+			false
+		}
 	
 	private fun peekError(tokenType: TokenType) {
 		val errorMessage = "expected next token to be $tokenType, got ${peekToken?.type} instead"
