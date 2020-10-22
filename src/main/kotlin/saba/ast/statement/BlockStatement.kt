@@ -8,8 +8,9 @@ class BlockStatement(
 	val statements= mutableListOf<Statement>()
 	override fun tokenLiteral() = token.literal
 	override fun toString(): String {
-		var string = ""
-		statements.map { string += it.toString()}
+		var string = "{ "
+		statements.map { string += it.toString() }
+		string += " }"
 		return string
 	}
 }
