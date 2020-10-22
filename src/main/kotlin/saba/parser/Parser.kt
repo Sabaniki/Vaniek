@@ -208,7 +208,6 @@ class Parser(val lexer: Lexer) {
 		
 		val name = Identifier(identifierToken, identifierToken.literal, typeLiteral)// ← TODO
 		
-		
 		if (!expectPeek(TokenType.ASSIGN)) return null
 		
 		val statement = LetStatement(
@@ -269,5 +268,4 @@ class Parser(val lexer: Lexer) {
 	
 	private fun noPrefixParseFnError(token: Token) =
 		errors.add("no prefix parse function for { Token: ${token.type}, Literal ${token.literal}}")
-	
 }

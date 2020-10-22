@@ -31,30 +31,28 @@ class LetStatementTest : ShouldSpec({
 						value = "anotherVar",
 						type = "testType2"
 					)
-				)
-			)
-		)
-		program.statements.add(
-			LetStatement(
-				token = Token(
-					type = TokenType.LET,
-					literal = "let"
 				),
-				name = Identifier(
+				LetStatement(
 					token = Token(
-						type = TokenType.IDENT,
-						literal = "myVar2"
+						type = TokenType.LET,
+						literal = "let"
 					),
-					value = "myVar2",
-					type = "testType"
-				),
-				value = Identifier(
-					token = Token(
-						type = TokenType.IDENT,
-						literal = "anotherVar2"
+					name = Identifier(
+						token = Token(
+							type = TokenType.IDENT,
+							literal = "myVar2"
+						),
+						value = "myVar2",
+						type = "testType"
 					),
-					value = "anotherVar2",
-					type = "testType2"
+					value = Identifier(
+						token = Token(
+							type = TokenType.IDENT,
+							literal = "anotherVar2"
+						),
+						value = "anotherVar2",
+						type = "testType2"
+					)
 				)
 			)
 		)

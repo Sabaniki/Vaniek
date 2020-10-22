@@ -9,7 +9,7 @@ class BlockStatement(
 	override fun tokenLiteral() = token.literal
 	override fun toString(): String {
 		var string = ""
-		statements.map { it -> string += it.toString()}
+		statements.map { string += it.toString()}
 		return string
 	}
 }
